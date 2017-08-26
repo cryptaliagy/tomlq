@@ -1,0 +1,9 @@
+[package]
+name = "tomlq"
+version = "0.1.0"
+authors = ["James Munns <james.munns@gmail.com>"]
+
+[dependencies]
+toml = "0.4"
+clap = "2.26"
+error-chain = "0.10"
