@@ -2,6 +2,9 @@
 name = "tomlq"
 version = "0.1.0"
 authors = ["James Munns <james.munns@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/jamesmunns/tomlq"
+description = "A tool for obtaining information from a TOML file on the command line"
 
 [dependencies]
 toml = "0.4"

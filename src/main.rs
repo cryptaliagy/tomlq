@@ -11,6 +11,8 @@ extern crate toml;
 
 use std::fs::File;
 use std::io::prelude::*;
+use std::process::exit;
+use std::io;
 
 use clap::{Arg, App};
 use toml::Value;
@@ -42,25 +44,25 @@ fn main() {
 
     let toml_file = match (matches.value_of("file"), matches.value_of("url")) {
         (Some(f), None) => {
-            println!("Reading from {}", f);
             load_toml_from_file(f).unwrap()
         }
-        (None, Some(u)) => {
-            println!("Getting from {}", u);
+        (None, Some(_u)) => {
             unimplemented!()
         }
         (None, None) => {
-            println!("Must specify URL or File to load!");
-            return; // TODO error code
+            eprintln!("Must specify URL or File to load!");
+            ::std::process::exit(-1);
         }
         (Some(_), Some(_)) => {
-            println!("Cannot specify URL and File!");
-            return; // TODO error code
+            eprintln!("Cannot specify URL and File!");
+            ::std::process::exit(-1);
         }
     };
 
-    let x = matches
-        .value_of("PATTERN").unwrap() // required above
+    let pattern = matches
+        .value_of("PATTERN").unwrap();
+
+    let x = pattern
         .split(".")
         .fold(Some(&toml_file), |acc, key| {
             match acc {
@@ -69,7 +71,17 @@ fn main() {
             }
         });
 
-    println!("{:?}", x);
+    exit(match x {
+        Some(needle) => {
+            println!("{}", format!("{}", needle).trim_matches('"'));
+            0
+        }
+        None => {
+            writeln!(io::stderr(), "{} not found!", pattern).unwrap();
+            -1
+        }
+
+    });
 }
 
 fn load_toml_from_file(file_name: &str) -> Result<Value> {
