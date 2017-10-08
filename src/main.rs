@@ -51,11 +51,11 @@ fn main() {
         }
         (None, None) => {
             eprintln!("Must specify URL or File to load!");
-            ::std::process::exit(-1);
+            ::std::process::exit(-1)
         }
         (Some(_), Some(_)) => {
             eprintln!("Cannot specify URL and File!");
-            ::std::process::exit(-1);
+            ::std::process::exit(-1)
         }
     };
 
@@ -63,7 +63,7 @@ fn main() {
         .value_of("PATTERN").unwrap();
 
     let x = pattern
-        .split(".")
+        .split('.')
         .fold(Some(&toml_file), |acc, key| {
             match acc {
                 Some(a) => a.get(key),
