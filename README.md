@@ -19,6 +19,10 @@ dependencies.toml.foo not found!
 ➜  tomlq git:(master) ✗
 ```
 
+## Contributions
+
+Contributions are welcome! I just needed this one feature, so I haven't spent any additional time on this. If you have an idea, please feel free to open an issue, if you've implemented some additional features, please feel free to open a PR!
+
 ## License
 
 Licensed under the [MIT License](./LICENSE)
