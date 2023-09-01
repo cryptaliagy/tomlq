@@ -39,8 +39,10 @@ jobs:
       - name: Install tq
         run: cargo binstall -y tq-rs
 
-      - name: Output the current version of the project
+      - id: get-version
+        name: Output the current version of the project
         run: echo "version=$(tq -f Cargo.toml 'package.version')" >> "$GITHUB_OUTPUT"
+
   build-binary:
     strategy:
       fail-fast: true

@@ -1,4 +1,4 @@
-name: nightly-scan
+name: weekly-scan
 
 on:
   schedule:
