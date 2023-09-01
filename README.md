@@ -1,23 +1,10 @@
-# tomlq
+# tq
 
-I wanted a command line tool like `jq` for TOML. Couldn't find one, so I'm making one.
+This is a fork of [jamesmunns/tomlq](https://github.com/jamesmunns/tomlq), which updates the dependencies being used and adds some small quality of life elements, including unit tests, build/release pipelines, and automated deployment to Github/crates.io.
 
-Right now you can only do one thing: Get a value from a toml file.
+I wanted to fork this project since the original hasn't been updated since 2017 and I wanted to make sure that I had an easy way to consume it through binstall to use its functionality in CI without having to add the compile time of the tool to my pipelines. I also wanted to make sure that it was cleaned up of any security notices from the dependencies/std.
 
-Given the `Cargo.toml` in this repo:
-
-```bash
-➜  tomlq git:(master) ✗ tomlq dependencies.toml -f Cargo.toml
-0.4
-➜  tomlq git:(master) ✗ echo $?
-0
-➜
-➜  tomlq git:(master) ✗ tomlq dependencies.toml.foo -f Cargo.toml
-dependencies.toml.foo not found!
-➜  tomlq git:(master) ✗ echo $?
-255
-➜  tomlq git:(master) ✗
-```
+I've enabled dependabot scanning as well as weekly dependency auditing (using `cargo audit`) to help keep dependencies up-to-date moving forward.
 
 ## Contributions
 

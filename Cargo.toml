@@ -1,12 +1,53 @@
 [package]
-name = "tomlq"
+name = "tq-rs"
 version = "0.1.0"
-authors = ["James Munns <james.munns@gmail.com>"]
+authors = ["Natalia Maximo <iam@natalia.dev>", "James Munns <james.munns@gmail.com>"]
+edition = "2021"
 license = "MIT"
-repository = "https://github.com/jamesmunns/tomlq"
+repository = "https://github.com/cryptaliagy/tq-rs"
 description = "A tool for obtaining information from a TOML file on the command line"
 
 [dependencies]
-toml = "0.4"
-clap = "2.26"
-error-chain = "0.10"
+toml = "0.7"
+clap = { version = "4.4", features = ["derive", "usage", "help"] }
+thiserror = "1.0.47"
+
+
+[lib]
+name = "tq"
+path = "src/lib.rs"
+test = true
+doctest = false
+
+[[bin]]
+name = "tq"
+path = "src/main.rs"
+test = false
+
+
+[package.metadata.binstall]
+pkg-fmt = "bin"
+
+[package.metadata.binstall.overrides.x86_64-unknown-linux-gnu]
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.amd64{ archive-suffix }"
+
+[package.metadata.binstall.overrides.aarch64-unknown-linux-gnu]
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.arm64{ archive-suffix }"
+
+[package.metadata.binstall.overrides.armv7-unknown-linux-gnueabi]
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7{ archive-suffix }"
+
+[package.metadata.binstall.overrides.armv7-unknown-linux-gnueabihf]
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7hf{ archive-suffix }"
+
+[package.metadata.binstall.overrides.x86_64-unknown-linux-musl]
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.amd64{ archive-suffix }"
+
+[package.metadata.binstall.overrides.aarch64-unknown-linux-musl]
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.arm64{ archive-suffix }"
+
+[package.metadata.binstall.overrides.armv7-unknown-linux-musleabi]
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7{ archive-suffix }"
+
+[package.metadata.binstall.overrides.armv7-unknown-linux-musleabihf]
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7hf{ archive-suffix }"
