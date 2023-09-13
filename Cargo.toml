@@ -10,7 +10,7 @@ description = "A tool for obtaining information from a TOML file on the command 
 [dependencies]
 toml = "0.7"
 clap = { version = "4.4", features = ["derive", "usage", "help"] }
-thiserror = "1.0.47"
+thiserror = "1.0.48"
 
 
 [lib]
