@@ -39,31 +39,31 @@ test = false
 required-features = ["color"]
 
 [package.metadata.binstall]
-pkg-fmt = "bin"
+pkg-fmt = "tgz"
 
 [package.metadata.binstall.overrides.x86_64-unknown-linux-gnu]
-pkg-url = "{ repo }/releases/download/{ version }/{ bin }.amd64{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.amd64{ archive-suffix }"
 
 [package.metadata.binstall.overrides.aarch64-unknown-linux-gnu]
-pkg-url = "{ repo }/releases/download/{ version }/{ bin }.arm64{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.arm64{ archive-suffix }"
 
 [package.metadata.binstall.overrides.armv7-unknown-linux-gnueabi]
-pkg-url = "{ repo }/releases/download/{ version }/{ bin }.armv7{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7{ archive-suffix }"
 
 [package.metadata.binstall.overrides.armv7-unknown-linux-gnueabihf]
-pkg-url = "{ repo }/releases/download/{ version }/{ bin }.armv7hf{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7hf{ archive-suffix }"
 
 [package.metadata.binstall.overrides.x86_64-unknown-linux-musl]
-pkg-url = "{ repo }/releases/download/{ version }/{ bin }.amd64{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.amd64{ archive-suffix }"
 
 [package.metadata.binstall.overrides.aarch64-unknown-linux-musl]
-pkg-url = "{ repo }/releases/download/{ version }/{ bin }.arm64{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.arm64{ archive-suffix }"
 
 [package.metadata.binstall.overrides.armv7-unknown-linux-musleabi]
-pkg-url = "{ repo }/releases/download/{ version }/{ bin }.armv7{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7{ archive-suffix }"
 
 [package.metadata.binstall.overrides.armv7-unknown-linux-musleabihf]
-pkg-url = "{ repo }/releases/download/{ version }/{ bin }.armv7hf{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7hf{ archive-suffix }"
 
 [profile.release]
 strip = true
