@@ -80,9 +80,11 @@ jobs:
       - name: Rename binary to use correct extension and move to output directory
         run: |
           mv target/${{ matrix.architecture.target }}/release/${{ env.PACKAGE_NAME }} \
-            ./output/${{ env.PACKAGE_NAME }}.${{ matrix.architecture.name }}
+            ./output/${{ env.PACKAGE_NAME }}
           mv target/${{ matrix.architecture.target }}/release/tomlq \
-            ./output/tomlq.${{ matrix.architecture.name }}
+            ./output/tomlq
+          tar czvf ./output/tomlq.${{ matrix.architecture.name }}.tgz -C ./output tq tomlq
+          rm ./output/tomlq ./output/tq
 
       - name: Upload the binary as an artifact
         uses: actions/upload-artifact@v4
