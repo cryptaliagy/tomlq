@@ -19,6 +19,14 @@ pub enum TqError {
     PatternNotFoundError { pattern: String },
 }
 
+#[derive(Default, Debug, Clone, clap::ValueEnum)]
+pub enum OutputType {
+    #[default]
+    Toml,
+    #[cfg(feature = "json")]
+    Json,
+}
+
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
@@ -28,12 +36,19 @@ pub struct Cli {
 
     /// Field to read from the TOML file
     pub pattern: String,
-    // /// The TOML File URL to read
-    // #[arg(short, long, value_name = "URL_PATH")]
-    // pub url: String,
+
+    /// The output type. Default is TOML, but supports outputting in different formats.
+    #[arg(short, long, value_name = "OUTPUT_TYPE", default_value = "toml")]
+    pub output: OutputType,
 }
 
 pub fn extract_pattern<'a>(toml_file: &'a Value, pattern: &str) -> Result<&'a Value> {
+    if pattern.is_empty() || pattern == "." {
+        return Ok(toml_file);
+    }
+
+    let pattern = pattern.trim_start_matches('.');
+
     pattern
         .split('.')
         .fold(Some(toml_file), |acc, key| match acc {

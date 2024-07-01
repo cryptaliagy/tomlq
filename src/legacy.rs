@@ -1,6 +1,7 @@
 use clap::Parser;
 use colored::Colorize;
 use std::process::exit;
+use tq::OutputType;
 
 fn main() {
     eprintln!(
@@ -9,7 +10,7 @@ fn main() {
     );
     eprintln!(
         "{}",
-        "The \"tomlq\" binary will be removed from this package starting in version 0.2.0".yellow()
+        "The \"tomlq\" binary will be removed from this package starting in version 0.2.0, scheduled for January 1, 2025".yellow()
     );
 
     let app = tq::Cli::parse();
@@ -26,7 +27,11 @@ fn main() {
 
     exit(match x {
         Ok(needle) => {
-            println!("{}", format!("{}", needle).trim_matches('"'));
+            match app.output {
+                OutputType::Toml => println!("{}", format!("{}", needle).trim_matches('"')),
+                #[cfg(feature = "json")]
+                OutputType::Json => println!("{}", serde_json::to_string(&needle).unwrap()),
+            }
             0
         }
         Err(e) => {
