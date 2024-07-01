@@ -1,15 +1,18 @@
 # tq
 
-This is a fork of [jamesmunns/tomlq](https://github.com/jamesmunns/tomlq), which updates the dependencies being used and adds some small quality of life elements, including unit tests, build/release pipelines, and automated deployment to Github/crates.io.
+This repository was previously available under `cryptaliagy/tq-rs`, and by the crate [`tq-rs`](https://crates.io/crates/tq-rs).
 
-I wanted to fork this project since the original hasn't been updated since 2017 and I needed an easy, quick way to consume it in CI. I also wanted to make sure that it was cleaned up of any security notices from the dependencies/std.
-
-I've enabled dependabot scanning as well as weekly dependency auditing (using `cargo audit`) to help keep dependencies up-to-date moving forward.
+The current iteration of this crate supports both the `tq` and `tomlq` binaries. Wherever possible, `tq` should be preferred, and `tomlq` will be removed from the crate for the `0.2.0` version (scheduled for January 1, 2025).
 
 ## Installing
 
-- Using `cargo` (compiles from source): `cargo install tq-rs`
-- Using `cargo-binstall` (downloads from Github Releases page): `cargo binstall -y tq-rs`
+- Using `cargo` (compiles from source): `cargo install tomlq`
+- Using `cargo-binstall` (downloads from Github Releases page): `cargo binstall -y tomlq`
+  - _NOTE_ Using `cargo-binstall`, only the `tq` binary will be available. The `tomlq` binary is not installed by `binstall`
+
+## Migrating from `tq-rs` crate
+
+The only step that is required to migrate from `tq-rs` to `tomlq` is to change the `cargo install` (or `cargo binstall`) step from referencing `tq-rs` to referencing `tomlq`. The binary has the same name, and the usage is the same.
 
 ## Usage
 
@@ -31,13 +34,13 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install cargo-binstall
         run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
       - name: Install tq
-        run: cargo binstall -y tq-rs
+        run: cargo binstall -y tomlq
 
       - id: get-version
         name: Output the current version of the project
