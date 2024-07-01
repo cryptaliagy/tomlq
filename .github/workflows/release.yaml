@@ -1,0 +1,132 @@
+name: Release
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PACKAGE_NAME: tq
+on:
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install cargo-binstall
+        run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+      - name: Install cargo-audit
+        run: cargo binstall cargo-audit -y
+
+      - name: Run the security audit check
+        run: cargo audit
+
+  get-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install cargo-binstall
+        run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+      - name: Install tq
+        run: cargo binstall -y tq-rs
+
+      - id: get-version
+        name: Output the current version of the project
+        run: echo "version=$(tq -f Cargo.toml 'package.version')" >> "$GITHUB_OUTPUT"
+
+  build-binary:
+    strategy:
+      fail-fast: true
+      matrix:
+        architecture:
+          - target: "x86_64-unknown-linux-musl"
+            name: "amd64"
+          - target: "aarch64-unknown-linux-musl"
+            name: "arm64"
+          - target: "armv7-unknown-linux-musleabi"
+            name: "armv7"
+          - target: "armv7-unknown-linux-musleabihf"
+            name: "armv7hf"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install cargo-binstall
+        run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+      - name: Install cross
+        run: cargo binstall -y cross
+
+      - name: Run the tests
+        run: cross test --target ${{ matrix.architecture.target }} --release
+
+      - name: Build the binary for the target
+        run: cross build --target ${{ matrix.architecture.target }} --release
+
+      - name: Create output directory
+        run: mkdir ./output
+
+      - name: Rename binary to use correct extension and move to output directory
+        run: |
+          mv target/${{ matrix.architecture.target }}/release/${{ env.PACKAGE_NAME }} \
+            ./output/${{ env.PACKAGE_NAME }}.${{ matrix.architecture.name }}
+
+      - name: Upload the binary as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PACKAGE_NAME }}-drop
+          path: |
+            ./output/*
+
+  release-binary:
+    needs:
+      - get-version
+      - build-binary
+      - audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Pull artifacts from artifact store
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.PACKAGE_NAME }}-drop
+          path: ./release
+
+      - name: Install cargo-binstall
+        run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+      - name: Publish a draft release to GitHub
+        run: |
+          gh release create --repo ${{ github.repository }} --draft \
+            -n "Latest version of ${{ env.PACKAGE_NAME }}" \
+            -t "${{ env.PACKAGE_NAME }} v${{ env.VERSION }}" \
+            ${{ env.VERSION }} ./release/*
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.get-version.outputs.version }}
+
+  release-cargo:
+    needs:
+      - release-binary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Publish ${{ env.PACKAGE_NAME }} to crates.io
+        run: cargo publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

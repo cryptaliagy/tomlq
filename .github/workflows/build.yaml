@@ -1,0 +1,47 @@
+name: Build
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PACKAGE_NAME: tq
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-binary:
+    strategy:
+      fail-fast: true
+      matrix:
+        architecture:
+          - target: "x86_64-unknown-linux-musl"
+            name: "amd64"
+          - target: "aarch64-unknown-linux-musl"
+            name: "arm64"
+          - target: "armv7-unknown-linux-musleabi"
+            name: "armv7"
+          - target: "armv7-unknown-linux-musleabihf"
+            name: "armv7hf"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install cargo-binstall
+        run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+      - name: Install cross
+        run: cargo binstall -y cross
+
+      - name: Run the tests
+        run: cross test --target ${{ matrix.architecture.target }} --release
+
+      - name: Build the binary for the target
+        run: cross build --target ${{ matrix.architecture.target }} --release
