@@ -37,7 +37,7 @@ jobs:
         run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
       - name: Install tq
-        run: cargo binstall -y tq-rs
+        run: cargo binstall -y tomlq
 
       - id: get-version
         name: Output the current version of the project
@@ -81,6 +81,8 @@ jobs:
         run: |
           mv target/${{ matrix.architecture.target }}/release/${{ env.PACKAGE_NAME }} \
             ./output/${{ env.PACKAGE_NAME }}.${{ matrix.architecture.name }}
+          mv target/${{ matrix.architecture.target }}/release/tomlq \
+            ./output/tomlq.${{ matrix.architecture.name }}
 
       - name: Upload the binary as an artifact
         uses: actions/upload-artifact@v4
