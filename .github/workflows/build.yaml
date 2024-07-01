@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install cargo-binstall
         run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
@@ -44,4 +44,12 @@ jobs:
         run: cross test --target ${{ matrix.architecture.target }} --release
 
       - name: Build the binary for the target
-        run: cross build --target ${{ matrix.architecture.target }} --release
+        run: cross build --target ${{ matrix.architecture.target }} --release --bins --all-features
+
+  security_audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rustsec/audit-check@v1.4.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

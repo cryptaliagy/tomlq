@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install cargo-binstall
         run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
@@ -31,7 +31,7 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install cargo-binstall
         run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
@@ -60,7 +60,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install cargo-binstall
         run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
@@ -72,7 +72,7 @@ jobs:
         run: cross test --target ${{ matrix.architecture.target }} --release
 
       - name: Build the binary for the target
-        run: cross build --target ${{ matrix.architecture.target }} --release
+        run: cross build --target ${{ matrix.architecture.target }} --release --bins --all-features
 
       - name: Create output directory
         run: mkdir ./output
@@ -83,9 +83,9 @@ jobs:
             ./output/${{ env.PACKAGE_NAME }}.${{ matrix.architecture.name }}
 
       - name: Upload the binary as an artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.PACKAGE_NAME }}-drop
+          name: ${{ env.PACKAGE_NAME }}-drop-${{ matrix.architecture.name }}
           path: |
             ./output/*
 
@@ -100,10 +100,11 @@ jobs:
       packages: write
     steps:
       - name: Pull artifacts from artifact store
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: ${{ env.PACKAGE_NAME }}-drop
+          pattern: ${{ env.PACKAGE_NAME }}-drop-*
           path: ./release
+          merge-multiple: true
 
       - name: Install cargo-binstall
         run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
@@ -124,7 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Publish ${{ env.PACKAGE_NAME }} to crates.io
         run: cargo publish

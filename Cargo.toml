@@ -1,16 +1,24 @@
 [package]
-name = "tq-rs"
+name = "tomlq"
 version = "0.1.2"
-authors = ["Natalia Maximo <iam@natalia.dev>", "James Munns <james.munns@gmail.com>"]
+authors = [
+    "Natalia Maximo <iam@natalia.dev>",
+    "James Munns <james.munns@gmail.com>",
+]
 edition = "2021"
 license = "MIT"
-repository = "https://github.com/cryptaliagy/tq-rs"
+repository = "https://github.com/cryptaliagy/tomlq"
 description = "A tool for obtaining information from a TOML file on the command line"
 
 [dependencies]
-toml = "0.7"
-clap = { version = "4.4", features = ["derive", "usage", "help"] }
-thiserror = "1.0.48"
+toml = "0.8"
+clap = { version = "4.5", features = ["derive", "usage", "help"] }
+thiserror = "1.0.61"
+colored = { version = "2.1.0", optional = true }
+
+[features]
+default = []
+color = ["colored"]
 
 
 [lib]
@@ -24,6 +32,11 @@ name = "tq"
 path = "src/main.rs"
 test = false
 
+[[bin]]
+name = "tomlq"
+path = "src/legacy.rs"
+test = false
+required-features = ["color"]
 
 [package.metadata.binstall]
 pkg-fmt = "bin"
@@ -51,3 +64,8 @@ pkg-url = "{ repo }/releases/download/{ version }/tq.armv7{ archive-suffix }"
 
 [package.metadata.binstall.overrides.armv7-unknown-linux-musleabihf]
 pkg-url = "{ repo }/releases/download/{ version }/tq.armv7hf{ archive-suffix }"
+
+[profile.release]
+strip = true
+opt-level = "z"
+lto = true
