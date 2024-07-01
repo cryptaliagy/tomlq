@@ -29,6 +29,7 @@ fn main() {
         Ok(needle) => {
             match app.output {
                 OutputType::Toml => println!("{}", format!("{}", needle).trim_matches('"')),
+                #[cfg(feature = "json")]
                 OutputType::Json => println!("{}", serde_json::to_string(&needle).unwrap()),
             }
             0
