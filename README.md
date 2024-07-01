@@ -8,7 +8,6 @@ The current iteration of this crate supports both the `tq` and `tomlq` binaries.
 
 - Using `cargo` (compiles from source): `cargo install tomlq`
 - Using `cargo-binstall` (downloads from Github Releases page): `cargo binstall -y tomlq`
-  - _NOTE_ Using `cargo-binstall`, only the `tq` binary will be available. The `tomlq` binary is not installed by `binstall`
 
 ## Migrating from `tq-rs` crate
 
