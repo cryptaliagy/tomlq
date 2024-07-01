@@ -1,5 +1,6 @@
 use clap::Parser;
 use std::process::exit;
+use tq::OutputType;
 
 fn main() {
     let app = tq::Cli::parse();
@@ -16,7 +17,11 @@ fn main() {
 
     exit(match x {
         Ok(needle) => {
-            println!("{}", format!("{}", needle).trim_matches('"'));
+            match app.output {
+                OutputType::Toml => println!("{}", format!("{}", needle).trim_matches('"')),
+                OutputType::Json => println!("{}", serde_json::to_string(&needle).unwrap()),
+            }
+
             0
         }
         Err(e) => {
