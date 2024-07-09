@@ -43,7 +43,6 @@ test = false
 name = "tomlq"
 path = "src/legacy.rs"
 test = false
-required-features = ["color"]
 
 [package.metadata.binstall]
 pkg-fmt = "tgz"

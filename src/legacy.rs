@@ -1,17 +1,21 @@
 use clap::Parser;
+#[cfg(feature = "color")]
 use colored::Colorize;
 use std::process::exit;
 use tq::OutputType;
 
 fn main() {
-    eprintln!(
-        "{}",
-        "You are currently using the legacy version of tomlq. Please use the new binary \"tq\" instead.".yellow()
-    );
-    eprintln!(
-        "{}",
-        "The \"tomlq\" binary will be removed from this package starting in version 0.2.0, scheduled for January 1, 2025".yellow()
-    );
+    let warning = "You are currently using the legacy version of tomlq. Please use the new binary \"tq\" instead.";
+    let deprecation = "The \"tomlq\" binary will be removed from this package starting in version 0.2.0, scheduled for January 1, 2025";
+
+    #[cfg(feature = "color")]
+    let warning = warning.yellow();
+
+    #[cfg(feature = "color")]
+    let deprecation = deprecation.yellow();
+
+    eprintln!("{}", warning,);
+    eprintln!("{}", deprecation);
 
     let app = tq::Cli::parse();
 
