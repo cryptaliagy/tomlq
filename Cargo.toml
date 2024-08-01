@@ -42,10 +42,6 @@ doctest = false
 name = "tq"
 test = false
 
-[[bin]]
-name = "tomlq"
-test = false
-
 [package.metadata.binstall]
 pkg-fmt = "tgz"
 
