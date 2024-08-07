@@ -1,10 +1,9 @@
 [package]
 name = "tomlq"
-version = "0.2.0"
+version = "0.1.6"
 authors = [
     "Natalia Maximo <iam@natalia.dev>",
     "James Munns <james.munns@gmail.com>",
-    "Venus Xeon-Blonde <venus@venusblon.de>"
 ]
 edition = "2021"
 license = "MIT"
