@@ -15,18 +15,21 @@ toml = "0.8"
 clap = { version = "4.5", features = ["derive", "usage", "help"] }
 thiserror = "1.0.61"
 colored = { version = "2.1.0", optional = true }
-serde_json = { version = "1.0.120", features = [
+
+[dependencies.serde_json] 
+version = "1.0.120"
+features = [
     "indexmap",
     "preserve_order",
     "raw_value",
     "unbounded_depth",
-], optional = true }
+]
+optional = true
 
 [features]
 default = ["json"]
 color = ["colored"]
 json = ["dep:serde_json"]
-
 
 [lib]
 name = "tq"
@@ -36,12 +39,10 @@ doctest = false
 
 [[bin]]
 name = "tq"
-path = "src/main.rs"
 test = false
 
 [[bin]]
 name = "tomlq"
-path = "src/legacy.rs"
 test = false
 
 [package.metadata.binstall]

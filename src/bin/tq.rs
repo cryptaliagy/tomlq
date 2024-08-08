@@ -1,8 +1,8 @@
 use clap::Parser;
-use std::process::exit;
+use std::process::ExitCode;
 use tq::OutputType;
 
-fn main() {
+fn main() -> ExitCode {
     let app = tq::Cli::parse();
 
     let toml_file = tq::load_toml_from_file(&app.file);
@@ -10,12 +10,12 @@ fn main() {
     let Ok(toml_file) = toml_file else {
         let e = toml_file.unwrap_err();
         eprintln!("{}", e);
-        exit(-1);
+        return ExitCode::FAILURE;
     };
 
     let x = tq::extract_pattern(&toml_file, &app.pattern);
 
-    exit(match x {
+    match x {
         Ok(needle) => {
             match app.output {
                 OutputType::Toml => println!("{}", format!("{}", needle).trim_matches('"')),
@@ -23,11 +23,11 @@ fn main() {
                 OutputType::Json => println!("{}", serde_json::to_string(&needle).unwrap()),
             }
 
-            0
+            ExitCode::SUCCESS
         }
         Err(e) => {
             eprintln!("{}", e);
-            -1
+            ExitCode::FAILURE
         }
-    });
+    }
 }

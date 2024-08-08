@@ -1,3 +1,5 @@
+//! Legacy tomlq binary.
+
 use clap::Parser;
 #[cfg(feature = "color")]
 use colored::Colorize;
