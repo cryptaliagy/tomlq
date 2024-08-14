@@ -34,6 +34,10 @@ pub fn extract_pattern<'a>(toml_file: &'a Value, pattern: &str) -> TqResult<&'a 
         })
 }
 
+#[deprecated = 
+    "Users should use/call the similar functions from the `toml` crate going forward. This function will be \
+    removed in a future release"
+]
 pub fn load_toml_from_file(file_name: &str) -> TqResult<toml::Value> {
     let mut file = File::open(file_name).map_err(|e| TqError::FileOpenError {
         file_name: file_name.to_string(),
