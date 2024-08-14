@@ -1,3 +1,4 @@
+use std::{fs::File, io::Read};
 use thiserror::Error;
 use toml::Value;
 
@@ -31,6 +32,19 @@ pub fn extract_pattern<'a>(toml_file: &'a Value, pattern: &str) -> TqResult<&'a 
         .ok_or_else(|| TqError::PatternNotFoundError {
             pattern: pattern.to_string(),
         })
+}
+
+pub fn load_toml_from_file(file_name: &str) -> TqResult<toml::Value> {
+    let mut file = File::open(file_name).map_err(|e| TqError::FileOpenError {
+        file_name: file_name.to_string(),
+        cause: e.to_string(),
+    })?;
+    let mut contents = String::new();
+    let _ = file.read_to_string(&mut contents);
+    toml::from_str::<Value>(&contents).map_err(|e| TqError::TomlParseError {
+        file_name: file_name.to_string(),
+        cause: e.to_string(),
+    })
 }
 
 #[cfg(test)]

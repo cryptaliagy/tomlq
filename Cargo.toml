@@ -29,9 +29,11 @@ features = [
 optional = true
 
 [features]
-default = ["json"]
+default = ["json", "bin"]
 json = ["dep:serde_json"]
-bin = ["dep:clap", "dep:anyhow", "dep:bat", "dep:console"]
+# Syntax highlighting feature for the tq CLI -- optional, disabled by default.
+syntax-highlighting = ["bin", "dep:bat", "dep:console"]
+bin = ["dep:clap", "dep:anyhow"]
 
 [lib]
 name = "tq"
