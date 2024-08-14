@@ -5,7 +5,7 @@ use std::{fs::File, io::{self, Cursor, Read}, path::PathBuf};
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
-    /// The TOML File to read, or STDIN if none is supplied.
+    /// The TOML File to read. Omit this flag to read from STDIN
     #[arg(short, long)]
     pub file: Option<PathBuf>,
 
