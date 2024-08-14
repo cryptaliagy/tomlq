@@ -73,7 +73,8 @@ fn main() -> anyhow::Result<()> {
     };
 
     #[cfg(feature = "syntax-highlighting")] {
-        // If the syntax-highlighting crate feature is enabled, use `bat`'s pretty printing system to print.
+        // If the syntax-highlighting crate feature is enabled, use `bat`'s pretty printing system to print with 
+        // highlighting. This will not restructure code/lines, and does not override the --pretty flag.
         let mut pretty_printer = bat::PrettyPrinter::new();
 
         pretty_printer
