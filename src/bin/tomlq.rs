@@ -4,7 +4,30 @@ use clap::Parser;
 #[cfg(feature = "color")]
 use colored::Colorize;
 use std::process::exit;
-use tq::OutputType;
+
+
+#[derive(Default, Debug, Clone, clap::ValueEnum)]
+pub enum OutputType {
+    #[default]
+    Toml,
+    #[cfg(feature = "json")]
+    Json,
+}
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+pub struct Cli {
+    /// The TOML File to read
+    #[arg(short, long, value_name = "TOML_FILE")]
+    pub file: String,
+
+    /// Field to read from the TOML file
+    pub pattern: String,
+
+    /// The output type. Default is TOML, but supports outputting in different formats.
+    #[arg(short, long, value_name = "OUTPUT_TYPE", default_value = "toml")]
+    pub output: OutputType,
+}
 
 fn main() {
     let warning = "You are currently using the legacy version of tomlq. Please use the new binary \"tq\" instead.";
@@ -19,7 +42,7 @@ fn main() {
     eprintln!("{}", warning,);
     eprintln!("{}", deprecation);
 
-    let app = tq::Cli::parse();
+    let app = Cli::parse();
 
     let toml_file = tq::load_toml_from_file(&app.file);
 
