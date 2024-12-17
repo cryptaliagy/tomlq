@@ -1,6 +1,6 @@
 use clap::Parser;
-use toml::Value;
 use std::{fs::File, io::{self, Read}, path::PathBuf};
+use toml::Value;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -11,7 +11,12 @@ struct Cli {
 
     /// The output type. Default is TOML, but supports outputting in different formats.
     #[arg(short, long, default_value = "toml")]
-    pub output: OutputType,
+    pub output: Format,
+
+    /// The input type. Default is TOML, but supports inputting in different formats. If the input
+    /// is JSON, it will be converted to TOML. So there is an overhead of using JSON input.
+    #[arg(short, long, default_value = "toml")]
+    pub input: Format,
 
     /// Should "pretty" printing be used?
     #[arg(short, long)]
@@ -26,11 +31,10 @@ struct Cli {
 }
 
 #[derive(Default, Debug, Copy, Clone, clap::ValueEnum)]
-enum OutputType {
+enum Format {
     #[default]
     Toml,
 
-    /// Print JSON all on one line.
     #[cfg(feature = "json")]
     Json,
 }
@@ -56,20 +60,31 @@ fn main() -> anyhow::Result<()> {
     let mut input_string = String::new();
     reader.read_to_string(&mut input_string)?;
 
+    let input_string = match app.input {
+        Format::Toml => input_string,
+        #[cfg(feature = "json")]
+        Format::Json =>
+            if let Ok(json_value) = serde_json::from_str::<toml::Value>(&input_string) {
+                // If the input is JSON, convert it to TOML
+                toml::to_string(&json_value)?
+            } else {
+                input_string
+            },
+    };
     let toml_value: toml::Value = toml::from_str(&input_string)?;
 
     let result: &Value = tq::extract_pattern(&toml_value, &app.pattern)?;
 
     // Generate a string to print
     let output = match (app.output, app.pretty) {
-        (OutputType::Toml, false) => toml::to_string(result)?,
-        (OutputType::Toml, true) => toml::to_string_pretty(result)?,
+        (Format::Toml, false) => toml::to_string(result)?,
+        (Format::Toml, true) => toml::to_string_pretty(result)?,
 
         #[cfg(feature = "json")]
-        (OutputType::Json, false) => serde_json::to_string(result)?,
+        (Format::Json, false) => serde_json::to_string(result)?,
 
         #[cfg(feature = "json")]
-        (OutputType::Json, true) => serde_json::to_string_pretty(result)?,
+        (Format::Json, true) => serde_json::to_string_pretty(result)?,
     };
 
     #[cfg(feature = "syntax-highlighting")] {
@@ -84,7 +99,7 @@ fn main() -> anyhow::Result<()> {
             .line_numbers(false);
 
         match app.output {
-            OutputType::Toml => {
+            Format::Toml => {
                 pretty_printer
                     .language("toml")
                     .input_from_bytes(output.as_bytes())
@@ -92,7 +107,7 @@ fn main() -> anyhow::Result<()> {
             }
 
             #[cfg(feature = "json")]
-            OutputType::Json => {
+            Format::Json => {
                 pretty_printer
                     .language("json")
                     .input_from_bytes(output.as_bytes())
