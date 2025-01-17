@@ -18,6 +18,10 @@ struct Cli {
     #[arg(short, long, default_value = "toml")]
     pub output: Format,
 
+    /// Should the output be raw? Only applies to TOML output.
+    #[arg(short, long)]
+    pub raw: bool,
+
     /// The input type. Default is TOML, but supports inputting in different formats. If the input
     /// is JSON, it will be converted to TOML. So there is an overhead of using JSON input.
     #[arg(short, long, default_value = "toml")]
@@ -105,7 +109,7 @@ fn main() -> anyhow::Result<()> {
     };
 
     #[cfg(feature = "syntax-highlighting")]
-    {
+    if !app.raw {
         // If the syntax-highlighting crate feature is enabled, use `bat`'s pretty printing system to print with
         // highlighting. This will not restructure code/lines, and does not override the --pretty flag.
         let mut pretty_printer = bat::PrettyPrinter::new();
@@ -132,11 +136,13 @@ fn main() -> anyhow::Result<()> {
                     .print()?;
             }
         }
+    } else {
+        println!("{}", format!("{}", output).trim_matches('"'));
     }
 
     // If there is not syntax highlighting, just print normally.
     #[cfg(not(feature = "syntax-highlighting"))]
-    println!("{output}");
+    println!("{}", format!("{}", output).trim_matches('"'));
 
     Ok(())
 }
