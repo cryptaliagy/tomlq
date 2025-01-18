@@ -142,7 +142,11 @@ fn main() -> anyhow::Result<()> {
 
     // If there is not syntax highlighting, just print normally.
     #[cfg(not(feature = "syntax-highlighting"))]
-    println!("{}", format!("{}", output).trim_matches('"'));
+    if !app.raw {
+        println!("{output}");
+    } else {
+        println!("{}", output.trim_matches('"'));
+    }
 
     Ok(())
 }
