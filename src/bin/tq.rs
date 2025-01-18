@@ -137,7 +137,7 @@ fn main() -> anyhow::Result<()> {
             }
         }
     } else {
-        println!("{}", format!("{}", output).trim_matches('"'));
+        println!("{}", output.trim_matches('"'));
     }
 
     // If there is not syntax highlighting, just print normally.
