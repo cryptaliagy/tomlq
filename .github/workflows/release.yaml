@@ -37,7 +37,7 @@ jobs:
         run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
       - name: Install tq
-        run: cargo binstall -y tomlq
+        run: cargo binstall -y tomlq@0.1.6
 
       - id: get-version
         name: Output the current version of the project
