@@ -1,69 +1,73 @@
-[package]
-name = "tomlq"
-version = "0.2.2"
-authors = [
-    "Natalia Maximo <iam@natalia.dev>",
-    "James Munns <james.munns@gmail.com>",
-]
-edition = "2021"
-license = "MIT"
-repository = "https://github.com/cryptaliagy/tomlq"
-description = "A tool for obtaining information from a TOML file on the command line"
-
-[dependencies]
-toml = "0.8"
-clap = { version = "4.5", features = [
-    "derive",
-    "usage",
-    "help",
-], optional = true }
-colored = { version = "3.0.0", optional = true }
-thiserror = "2.0.11"
-console = { version = "0.15.10", features = [
-    "windows-console-colors",
-], optional = true }
-anyhow = { version = "1.0.95", features = ["backtrace"], optional = true }
-bat = { version = "0.25.0", optional = true, default-features = false, features = [
-    "build-assets",
-    "regex-fancy",
-] }
-serde = "1.0.217"
-
-
-[dependencies.serde_json]
-version = "1.0.135"
-features = ["indexmap", "preserve_order", "raw_value", "unbounded_depth"]
-optional = true
-
-[features]
-default = ["json", "bin"]
-json = ["dep:serde_json"]
-# Syntax highlighting feature for the tq CLI -- optional, disabled by default.
-syntax-highlighting = ["bin", "dep:bat", "dep:console"]
-bin = ["dep:clap", "dep:anyhow"]
-
-# THIS FEATURE IS FOR THE PREVIOUS VERSION OF TOMLQ AND IS NOT USED BY THE TQ BINARY.
-# IT WILL BE REMOVED IN A FUTURE RELEASE.
-color = ["dep:colored"]
-
-[lib]
-name = "tq"
-test = true
-doctest = true
-doc = true
-
 [[bin]]
 name = "tq"
-test = false
 required-features = ["bin"]
+test = false
+
+[dependencies]
+serde = "1.0.217"
+thiserror = "2.0.11"
+toml = "0.8"
+
+[dependencies.anyhow]
+features = ["backtrace"]
+optional = true
+version = "1.0.95"
+
+[dependencies.bat]
+default-features = false
+features = ["build-assets", "regex-fancy"]
+optional = true
+version = "0.25.0"
+
+[dependencies.clap]
+features = ["derive", "usage", "help"]
+optional = true
+version = "4.5"
+
+[dependencies.colored]
+optional = true
+version = "3.0.0"
+
+[dependencies.console]
+features = ["windows-console-colors"]
+optional = true
+version = "0.15.10"
+
+[dependencies.serde_json]
+features = ["indexmap", "preserve_order", "raw_value", "unbounded_depth"]
+optional = true
+version = "1.0.135"
+
+[features]
+write = []
+bin = ["dep:clap", "dep:anyhow"]
+color = ["dep:colored"]
+default = ["json", "bin"]
+json = ["dep:serde_json"]
+syntax-highlighting = ["bin", "dep:bat", "dep:console"]
+
+[lib]
+doc = true
+doctest = true
+name = "tq"
+test = true
+
+[package]
+authors = ["Natalia Maximo <iam@natalia.dev>", "James Munns <james.munns@gmail.com>"]
+description = "A tool for obtaining information from a TOML file on the command line"
+edition = "2021"
+license = "MIT"
+name = "tomlq"
+repository = "https://github.com/cryptaliagy/tomlq"
+version = "0.2.2"
 
 [package.metadata.binstall]
 pkg-fmt = "tgz"
 
-[package.metadata.binstall.overrides.x86_64-unknown-linux-gnu]
-pkg-url = "{ repo }/releases/download/{ version }/{ name }.amd64{ archive-suffix }"
-
 [package.metadata.binstall.overrides.aarch64-unknown-linux-gnu]
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.arm64{ archive-suffix }"
+
+[package.metadata.binstall.overrides.aarch64-unknown-linux-musl]
 pkg-url = "{ repo }/releases/download/{ version }/{ name }.arm64{ archive-suffix }"
 
 [package.metadata.binstall.overrides.armv7-unknown-linux-gnueabi]
@@ -72,19 +76,19 @@ pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7{ archive-suffix
 [package.metadata.binstall.overrides.armv7-unknown-linux-gnueabihf]
 pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7hf{ archive-suffix }"
 
-[package.metadata.binstall.overrides.x86_64-unknown-linux-musl]
-pkg-url = "{ repo }/releases/download/{ version }/{ name }.amd64{ archive-suffix }"
-
-[package.metadata.binstall.overrides.aarch64-unknown-linux-musl]
-pkg-url = "{ repo }/releases/download/{ version }/{ name }.arm64{ archive-suffix }"
-
 [package.metadata.binstall.overrides.armv7-unknown-linux-musleabi]
 pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7{ archive-suffix }"
 
 [package.metadata.binstall.overrides.armv7-unknown-linux-musleabihf]
 pkg-url = "{ repo }/releases/download/{ version }/{ name }.armv7hf{ archive-suffix }"
 
+[package.metadata.binstall.overrides.x86_64-unknown-linux-gnu]
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.amd64{ archive-suffix }"
+
+[package.metadata.binstall.overrides.x86_64-unknown-linux-musl]
+pkg-url = "{ repo }/releases/download/{ version }/{ name }.amd64{ archive-suffix }"
+
 [profile.release]
-strip = true
-opt-level = "z"
 lto = true
+opt-level = "z"
+strip = true

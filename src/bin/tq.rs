@@ -6,6 +6,8 @@ use std::{
     path::PathBuf,
 };
 use toml::{ser::ValueSerializer, Value};
+#[cfg(feature = "write")]
+use tq::parse_toml_value;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -34,6 +36,10 @@ struct Cli {
 
     /// Field to read from the TOML file
     pub pattern: String,
+
+    /// Write value to the given pattern
+    #[arg(short = 'w', long = "write")]
+    pub write: Option<String>,
 
     #[cfg(feature = "syntax-highlighting")]
     #[arg(short, long, default_value = "auto")]
@@ -82,7 +88,24 @@ fn main() -> anyhow::Result<()> {
             }
         }
     };
-    let toml_value: toml::Value = toml::from_str(&input_string)?;
+    let mut toml_value: toml::Value = toml::from_str(&input_string)?;
+    // Handle write-mode before extracting pattern (requires mutable access)
+    #[cfg(feature = "write")]
+    if let Some(write_val) = &app.write {
+        let new_val = parse_toml_value(write_val);
+
+        tq::set_pattern(&mut toml_value, &app.pattern, new_val)?;
+
+        let output = toml::to_string(&toml_value)?;
+
+        if let Some(path) = &app.file {
+            std::fs::write(path, output)?;
+        } else {
+            println!("{output}");
+        }
+
+        return Ok(());
+    }
 
     let result: &Value = tq::extract_pattern(&toml_value, &app.pattern)?;
 

@@ -34,10 +34,55 @@ pub fn extract_pattern<'a>(toml_file: &'a Value, pattern: &str) -> TqResult<&'a 
         })
 }
 
-#[deprecated = 
-    "Users should use/call the similar functions from the `toml` crate going forward. This function will be \
-    removed in a future release"
-]
+#[cfg(feature = "write")]
+pub fn parse_toml_value(s: &str) -> toml::Value {
+    if let Ok(i) = s.parse::<i64>() {
+        toml::Value::Integer(i)
+    } else if let Ok(f) = s.parse::<f64>() {
+        toml::Value::Float(f)
+    } else if let Ok(b) = s.parse::<bool>() {
+        toml::Value::Boolean(b)
+    } else {
+        toml::Value::String(s.to_string())
+    }
+}
+
+#[cfg(feature = "write")]
+pub fn set_pattern(toml: &mut toml::Value, pattern: &str, new_value: toml::Value) -> TqResult<()> {
+    let pattern = pattern.trim_start_matches('.');
+    let mut parts = pattern.split('.').peekable();
+
+    let mut current = toml;
+
+    while let Some(key) = parts.next() {
+        let is_last = parts.peek().is_none();
+
+        if is_last {
+            match current {
+                toml::Value::Table(table) => {
+                    table.insert(key.to_string(), new_value);
+                    return Ok(());
+                }
+                _ => {
+                    return Err(TqError::PatternNotFoundError {
+                        pattern: pattern.to_string(),
+                    });
+                }
+            }
+        } else {
+            current = current
+                .get_mut(key)
+                .ok_or_else(|| TqError::PatternNotFoundError {
+                    pattern: pattern.to_string(),
+                })?;
+        }
+    }
+
+    Ok(())
+}
+
+#[deprecated = "Users should use/call the similar functions from the `toml` crate going forward. This function will be \
+    removed in a future release"]
 pub fn load_toml_from_file(file_name: &str) -> TqResult<toml::Value> {
     let mut file = File::open(file_name).map_err(|e| TqError::FileOpenError {
         file_name: file_name.to_string(),
@@ -104,5 +149,30 @@ mod tests {
         let x = extract_pattern(&toml_file, "package.test").unwrap();
 
         assert_eq!(x, &Value::String("test".to_string()));
+    }
+}
+
+#[cfg(all(test, feature = "write"))]
+mod write_tests {
+    use super::*;
+
+    #[test]
+    fn test_set_pattern() {
+        let mut toml = toml::from_str(
+            r#"
+            [package]
+            version = "0.1.0"
+            "#,
+        )
+        .unwrap();
+
+        set_pattern(
+            &mut toml,
+            "package.version",
+            toml::Value::String("1.2.3".into()),
+        )
+        .unwrap();
+
+        assert_eq!(toml["package"]["version"].as_str().unwrap(), "1.2.3");
     }
 }
