@@ -9,6 +9,8 @@ The current iteration of this crate supports both the `tq` and `tomlq` binaries.
 - Using `cargo` (compiles from source): `cargo install tomlq`
 - Using `cargo-binstall` (downloads from Github Releases page): `cargo binstall -y tomlq`
 
+Pre-built binaries are available for Linux (amd64, arm64, armv7) and macOS (Apple Silicon, Intel).
+
 ## Migrating from `tq-rs` crate
 
 The only step that is required to migrate from `tq-rs` to `tomlq` is to change the `cargo install` (or `cargo binstall`) step from referencing `tq-rs` to referencing `tomlq`. The binary has the same name, and the usage is the same.

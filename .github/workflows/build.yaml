@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-binary:
+  build-linux:
     strategy:
       fail-fast: true
       matrix:
@@ -45,6 +45,32 @@ jobs:
 
       - name: Build the binary for the target
         run: cross build --target ${{ matrix.architecture.target }} --release --bins --all-features
+
+  build-macos:
+    strategy:
+      fail-fast: true
+      matrix:
+        architecture:
+          - target: "aarch64-apple-darwin"
+            name: "darwin-arm64"
+            runner: "macos-latest"
+          - target: "x86_64-apple-darwin"
+            name: "darwin-amd64"
+            runner: "macos-13"
+    runs-on: ${{ matrix.architecture.runner }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        run: rustup target add ${{ matrix.architecture.target }}
+
+      - name: Run the tests
+        run: cargo test --release
+
+      - name: Build the binary for the target
+        run: cargo build --target ${{ matrix.architecture.target }} --release --bins --all-features
 
   security_audit:
     runs-on: ubuntu-latest

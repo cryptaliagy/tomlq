@@ -43,7 +43,7 @@ jobs:
         name: Output the current version of the project
         run: echo "version=$(tq -f Cargo.toml 'package.version')" >> "$GITHUB_OUTPUT"
 
-  build-binary:
+  build-linux:
     strategy:
       fail-fast: true
       matrix:
@@ -91,10 +91,54 @@ jobs:
           path: |
             ./output/*
 
+  build-macos:
+    strategy:
+      fail-fast: true
+      matrix:
+        architecture:
+          - target: "aarch64-apple-darwin"
+            name: "darwin-arm64"
+            runner: "macos-latest"
+          - target: "x86_64-apple-darwin"
+            name: "darwin-amd64"
+            runner: "macos-13"
+    runs-on: ${{ matrix.architecture.runner }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        run: rustup target add ${{ matrix.architecture.target }}
+
+      - name: Run the tests
+        run: cargo test --release
+
+      - name: Build the binary for the target
+        run: cargo build --target ${{ matrix.architecture.target }} --release --bins --all-features
+
+      - name: Create output directory
+        run: mkdir ./output
+
+      - name: Package binary as tarball
+        run: |
+          mv target/${{ matrix.architecture.target }}/release/${{ env.PACKAGE_NAME }} \
+            ./output/${{ env.PACKAGE_NAME }}
+          tar czvf ./output/tomlq.${{ matrix.architecture.name }}.tgz -C ./output tq
+          rm ./output/tq
+
+      - name: Upload the binary as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PACKAGE_NAME }}-drop-${{ matrix.architecture.name }}
+          path: |
+            ./output/*
+
   release-binary:
     needs:
       - get-version
-      - build-binary
+      - build-linux
+      - build-macos
       - audit
     runs-on: ubuntu-latest
     permissions:
